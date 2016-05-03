@@ -27,7 +27,6 @@
 		<version>4.0.4</version>
 	</dependency>
 	
-
 	<dependency>
 		<groupId>edu.stanford.nlp</groupId>
 		<artifactId>stanford-corenlp</artifactId>
@@ -63,7 +62,14 @@
 		<groupId>commons-configuration</groupId>
 		<artifactId>commons-configuration</artifactId>
 		<version>1.10</version>
-	</dependency>	
+	</dependency>
+	
+	<dependency>
+		<groupId>com.h2database</groupId>
+		<artifactId>h2</artifactId>
+		<version>1.4.191</version>
+	</dependency>
+		
 
   </dependencies>
 </project>

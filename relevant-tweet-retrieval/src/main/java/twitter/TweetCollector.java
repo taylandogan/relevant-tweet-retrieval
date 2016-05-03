@@ -35,7 +35,7 @@ public class TweetCollector extends Thread {
 	// Reads the twitter auth configs
 	public void readTwitterConfig(String configFileName){
 		Properties properties = new Properties();
-		File configFile = new File(configDirectory.getAbsolutePath() + File.separator + twitterConfigFileName);
+		File configFile = new File(configDirectory.getAbsolutePath() + File.separator + configFileName);
 		
 		try {
 			FileInputStream fis = new FileInputStream(configFile);
