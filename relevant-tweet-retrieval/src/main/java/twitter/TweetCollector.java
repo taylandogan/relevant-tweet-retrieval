@@ -13,6 +13,7 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TweetCollector extends Thread {
+	
 	File configDirectory = new File("conf");
 	private static final String twitterConfigFileName = "twitterAuth.properties";
 	private volatile boolean shouldIRun = true;
@@ -89,10 +90,11 @@ public class TweetCollector extends Thread {
 	   mainStream.addListener(new CustomTwitterStream());
 
 	   // Longitudes & latitudes for NYC.
-	   double [][] location ={{-74,40},{-73,41}};
+	   double [][] locationNYC ={{-74,40},{-73,41}};
+	   double [][] locationLA = {{-119,33},{-117,35}};
 	   
 	   streamFilter = new FilterQuery();
-	   streamFilter.locations(location);
+	   streamFilter.locations(locationLA);
 	   System.out.println("Twitter stream is initalized.");
 	}
 	
@@ -108,20 +110,23 @@ public class TweetCollector extends Thread {
 
 	public static void main(String[] args) throws InterruptedException {
 		TweetCollector tc = new TweetCollector();
+		TweetSaver ts = new TweetSaver();
 		
-		if (tc != null) {
-			System.out.println("Tweet Collector thread is started.");
-			tc.start();
-			
+		ts.start();
+		System.out.println("Tweet Saver thread is started.");
+		
+		tc.start();
+		System.out.println("Tweet Collector thread is started.");
+		
+		
 			// TODO: Thread does not stop for now, fix it
-			Thread.sleep(10000);
+//			Thread.sleep(10000);
 //			ExecutorService executor = Executors.newSingleThreadExecutor();
 //			executor.invokeAll(Arrays.asList(new TweetCollector()), 10, TimeUnit.SECONDS); // Timeout of 10 seconds.
 //			executor.shutdown();
 			
-			tc.terminate();
-			tc.join();
-			System.out.println("Tweet Collector thread is stopped.");
-		}
+//			tc.terminate();
+//			tc.join();
+//			System.out.println("Tweet Collector thread is stopped.");
 	}
 }

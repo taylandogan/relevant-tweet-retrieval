@@ -1,7 +1,9 @@
 package twitter;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.sql.SQLException;
+import java.util.List;
 
+import db.DbOperations;
 import nlp.TextAnalyzer;
 import twitter4j.StallWarning;
 import twitter4j.Status;
@@ -11,14 +13,15 @@ import twitter4j.StatusListener;
 public class CustomTwitterStream implements StatusListener {
 	
 	public TextAnalyzer textAnalyzer = null;
+	//public TweetSaver tweetSaver = null;
 	
 	public CustomTwitterStream() {
 		super();
 		this.textAnalyzer = new TextAnalyzer();
+		//this.tweetSaver = new TweetSaver();
+		//this.tweetSaver.start();
 	}
-
-	private LinkedBlockingQueue<Tweet> tweetQ = new LinkedBlockingQueue<>();
-
+	
 	@Override
 	public void onException(Exception e) {
 		System.out.println(e);
@@ -47,21 +50,32 @@ public class CustomTwitterStream implements StatusListener {
 		// If tweet is in english, create & enqueue the tweet
 		if(st.getLang().equalsIgnoreCase("en")) {
 			String rawTweet = st.getText();
-			String cleanTweet = textAnalyzer.extractWordList(rawTweet).toString();
+			List<String> extractedWordList = textAnalyzer.extractWordList(rawTweet);
+			String cleanTweet = String.join(" ", extractedWordList);
 			
-			System.out.println("Raw Tweet: " + rawTweet);
-			System.out.println("Clean Tweet: " + cleanTweet);
+			//System.out.println("Raw Tweet: " + rawTweet);
+			//System.out.println("Clean Tweet: " + cleanTweet);
 			
 			// If tweet satisfies our requirements, add it to the queue
 			if(isTweetNice(cleanTweet)) {
-				Tweet t = new Tweet(cleanTweet, 
+				Tweet t = new Tweet(
+						-1, //id before putting DB, the id given by DB will be used later
+						cleanTweet, 
 						rawTweet,
 						st.getUser().getName(),
 						st.getCreatedAt(),
 						st.getRetweetCount(),
 						st.getFavoriteCount());
-				
-				tweetQ.add(t);
+			
+				TweetSaver.externalInsertToQ(t);
+
+//				try {
+//					DbOperations.insertTweet(t);
+//					System.out.println("Inserted: " + cleanTweet);
+//				} catch (SQLException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			}
 		}
 	}
@@ -72,13 +86,6 @@ public class CustomTwitterStream implements StatusListener {
 		
 	}
 
-	public LinkedBlockingQueue<Tweet> getTweetQ() {
-		return tweetQ;
-	}
-
-	public void setTweetQ(LinkedBlockingQueue<Tweet> tweetQ) {
-		this.tweetQ = tweetQ;
-	}
 	
 	// Implement this to your liking, e.g. I want my clean tweet to be long enough 
 	public boolean isTweetNice(String cleanTweet) {

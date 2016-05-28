@@ -62,6 +62,8 @@ public class H2ConnectionProvider {
 			e.printStackTrace();
 		}
 		
+		/*
+		 * For debugging
 		StringBuilder sb = new StringBuilder();
 		sb.append("Db configurations are read.\n");
 		sb.append("#--Db Configurations--\n");
@@ -72,9 +74,7 @@ public class H2ConnectionProvider {
 		sb.append(this.password + "\n");
 		sb.append("#----\n");
 		System.out.println(sb.toString());
+		*/
 	}
-
-	public static void main(String[] args) throws SQLException {
-		
-	}
+	
 }

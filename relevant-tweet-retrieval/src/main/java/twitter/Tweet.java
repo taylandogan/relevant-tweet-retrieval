@@ -5,22 +5,32 @@ import java.util.Date;
 // A custom tweet class including the necessary fields only
 public class Tweet {
 	
+	public long tweetId;
 	public String cleanText;
 	public String rawText;
 	public String username;
 	public Date creationDate;
-	public long retweetCount;
-	public long favoriteCount;
+	public int retweetCount;
+	public int favoriteCount;
 	
-	public Tweet(String cleanText, String rawText, String username,
-			Date creationDate, long retweetCount, long favoriteCount) {
+	public Tweet(long tweetId, String cleanText, String rawText, String username,
+			Date creationDate, int retweetCount, int favoriteCount) {
 		super();
+		this.tweetId = tweetId;
 		this.cleanText = cleanText;
 		this.rawText = rawText;
 		this.username = username;
 		this.creationDate = creationDate;
 		this.retweetCount = retweetCount;
 		this.favoriteCount = favoriteCount;
+	}
+	
+	public long getTweetId() {
+		return tweetId;
+	}
+	
+	public void setTweetId(long tweetId) {
+		this.tweetId = tweetId;
 	}
 
 	public String getCleanText() {
@@ -59,7 +69,7 @@ public class Tweet {
 		return retweetCount;
 	}
 
-	public void setRetweetCount(long retweetCount) {
+	public void setRetweetCount(int retweetCount) {
 		this.retweetCount = retweetCount;
 	}
 
@@ -67,7 +77,7 @@ public class Tweet {
 		return favoriteCount;
 	}
 
-	public void setFavoriteCount(long favoriteCount) {
+	public void setFavoriteCount(int favoriteCount) {
 		this.favoriteCount = favoriteCount;
 	}
 	
