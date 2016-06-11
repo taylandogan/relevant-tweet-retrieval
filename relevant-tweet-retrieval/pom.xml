@@ -21,6 +21,20 @@
 		<version>6.0.0</version>
 	</dependency>
 	
+	<!-- http://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
+	<dependency>
+	    <groupId>org.apache.lucene</groupId>
+	    <artifactId>lucene-analyzers-common</artifactId>
+	    <version>6.0.1</version>
+	</dependency>
+	
+	<!-- http://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser -->
+	<dependency>
+	    <groupId>org.apache.lucene</groupId>
+	    <artifactId>lucene-queryparser</artifactId>
+	    <version>6.0.1</version>
+	</dependency>
+
 	<dependency>
 		<groupId>org.twitter4j</groupId>
 		<artifactId>twitter4j-stream</artifactId>

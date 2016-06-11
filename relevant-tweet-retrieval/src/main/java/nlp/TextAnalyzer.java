@@ -59,7 +59,7 @@ public class TextAnalyzer {
                 }
                 
                 // Eliminate Twitter mentions, e.g. @username
-                if(word.startsWith("@")) {
+                else if(word.startsWith("@")) {
                 	continue;
                 }
                 
