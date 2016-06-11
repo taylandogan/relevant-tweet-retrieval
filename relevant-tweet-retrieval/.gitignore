@@ -2,3 +2,5 @@
 /conf/
 .classpath
 /.settings/
+/indexdir/
+../tweetswclasses.csv
