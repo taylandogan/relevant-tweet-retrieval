@@ -3,6 +3,8 @@ package ir;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -45,9 +47,13 @@ public class LuceneIndexSearch {
 		analyzer = new StandardAnalyzer();
 	}
 	
-	public void searchIndex(String queryText, String fieldName) {
+	public List<Long> searchIndex(String queryText, String fieldName) {
+		System.out.println("Query terms:" + queryText);
 		// Create a query parser
 		QueryParser qParser = new QueryParser(fieldName, analyzer);
+		
+		// Resulting ID list
+		List<Long> hitIdList = new ArrayList<Long>();
 		
 		// Attempt parsing and searching the given query text
 		try {
@@ -55,16 +61,23 @@ public class LuceneIndexSearch {
 			ScoreDoc[] hits = iSearcher.search(q, 20).scoreDocs;
 			System.out.println("Length of hit list: " + hits.length);
 			
+			// Collect hit ids
 			for (int i = 0; i < hits.length; i++) {
-		      Document hitDoc = iSearcher.doc(hits[i].doc);
-		      System.out.println(hitDoc.get(fieldName));
-		    }
+				Document hitDoc = iSearcher.doc(hits[i].doc);
+				String hitId = hitDoc.get("id").toString();
+		      
+				if(hitId != null) {
+					hitIdList.add(Long.parseLong(hitId));
+				}     
+			}
 			
 		} catch (ParseException e) {
 			System.out.println("Could not parse the given query text: " + e.getMessage());
 		} catch (IOException e) {
 			System.out.println("Error while searching index: " + e.getMessage());
 		}
+		
+		return hitIdList;
 	}
 	
 	@Override

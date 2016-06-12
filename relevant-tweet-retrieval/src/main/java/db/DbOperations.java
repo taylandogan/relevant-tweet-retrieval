@@ -67,7 +67,7 @@ public class DbOperations {
 		connection.close();
 	}
 	
-	public static List<Tweet> getAllTweetsFromDB() throws SQLException {
+	public static List<Tweet> getTweetsByIdFromDB(List<Long> idList) throws SQLException {
 		List<Tweet> tweetsOnDB = new ArrayList<Tweet>();
 		
 		// Get DB connection
@@ -76,9 +76,12 @@ public class DbOperations {
 	
 		// Prepare statement and query
 		PreparedStatement selectStmt = null;
-		String selectQuery = "SELECT * FROM TWEETS";
+		String selectQuery = "SELECT * FROM TWEETS WHERE id IN (select * from table(x int = ?))";
 		
 		selectStmt = connection.prepareStatement(selectQuery);
+		Object[] idArray = idList.toArray(new Object[idList.size()]);
+		selectStmt.setObject(1, idArray);
+		
 		ResultSet rs = selectStmt.executeQuery();
 		
 		while (rs.next()) {
@@ -107,13 +110,17 @@ public class DbOperations {
 	public static void main(String[] args) throws SQLException {
 		long l = -1;
 		Date d = new java.util.Date();
-		Tweet t = new Tweet(l, "insert from java", "this is an insert from java", "java3", new Timestamp(d.getTime()), 6, 10);
-		DbOperations.insertTweet(t);
+		//Tweet t = new Tweet(l, "insert from java", "this is an insert from java", "java3", new Timestamp(d.getTime()), 6, 10);
+		//DbOperations.insertTweet(t);
 		System.out.println("DONE");
-		List<Tweet> tweetList = DbOperations.getAllTweetsFromDB();
+		List<Long> idList = new ArrayList<Long>();
+		idList.add(343l);
+		idList.add(344l);
+		
+		List<Tweet> tweetList = DbOperations.getTweetsByIdFromDB(idList);
 	
 		for(int i = 0; i < tweetList.size(); i++) {
-			System.out.println(tweetList.get(i).getUsername());
+			System.out.println(tweetList.get(i).rawText);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -20,6 +21,8 @@ import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import twitter.Tweet;
+import db.DbOperations;
 import db.H2ConnectionProvider;
 
 public class LuceneIndexer {
@@ -57,27 +60,24 @@ public class LuceneIndexer {
 		ResultSet rs = selectStmt.executeQuery();
 		
 		// Declare field types
-		
 		FieldType idFT = new FieldType(); // A field type for ID
 		idFT.setIndexOptions(IndexOptions.NONE); // Do not index id information
-		idFT.setTokenized(true); // Do not apply tokenization
+		idFT.setTokenized(false); // Do not apply tokenization
 		idFT.setStored(true); // Store id values
 		idFT.freeze(); // Prevents further changes
 		
 		FieldType cleanTweetFT = new FieldType(); // A field type for clean tweets
 		cleanTweetFT.setIndexOptions(IndexOptions.DOCS_AND_FREQS); // Index documents and term frequencies
 		cleanTweetFT.setTokenized(true); // Apply tokenization
-		cleanTweetFT.setStored(true); // To store the value of field
+		cleanTweetFT.setStored(false); // To store the value of field
 		//cleanTweetFT.setOmitNorms(true); // By setting this option, we use raw tf
 		cleanTweetFT.freeze(); // Prevents further changes
 		
 		
 		while (rs.next()) {
-			String cleanTweet = rs.getString("raw");
-			//System.out.println(cleanTweet);
 			Document d = new Document();
-			d.add(new Field("id", rs.getBytes("id"), idFT));
-			d.add(new Field("clean", cleanTweet, cleanTweetFT));
+			d.add(new Field("id", String.valueOf(rs.getLong("id")), idFT));
+			d.add(new Field("clean", rs.getString("clean"), cleanTweetFT)); // TODO: Use clean or raw?
 			iWriter.addDocument(d);
 		}
 		
@@ -103,30 +103,27 @@ public class LuceneIndexer {
 	}
 	
 	
-	public static void main(String[] args) throws IOException {
-		long a = System.currentTimeMillis();;
+	public static void main(String[] args) throws IOException, SQLException {
+		long a = System.currentTimeMillis();
 		LuceneIndexer li = new LuceneIndexer();
 		li.createIndex();
-		long b = System.currentTimeMillis();;
+		long b = System.currentTimeMillis();
 		
 		LuceneIndexSearch lis = new LuceneIndexSearch();
-		/*
-		System.out.println("----------------------");
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println();
-		System.out.println("Search Results: ");
-		System.out.println();
-		*/
-		lis.searchIndex("donald trump", "clean");
-		long c = System.currentTimeMillis();;
+		List<Long> idList = lis.searchIndex("donald trump", "clean");
 		
+		long c = System.currentTimeMillis();
+		List<Tweet> tweetList = DbOperations.getTweetsByIdFromDB(idList);
+		long d = System.currentTimeMillis();
+		
+		for(int i = 0; i < tweetList.size(); i++) {
+			System.out.println(tweetList.get(i).rawText);
+		}
+
 		System.out.println();
 		System.out.println("Building the index took: " + (b-a) + " ms.");
 		System.out.println("Searching the index took: " + (c-b) + " ms.");
-		
+		System.out.println("Fetching tweets took: " + (d-c) + " ms.");
 	}
 
 }
